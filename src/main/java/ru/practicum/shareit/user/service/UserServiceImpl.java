@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
@@ -15,9 +16,10 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final Map<Long, User> users = new HashMap<>();
-    private Long id = 0L;
+    private long id = 0L;
 
     @Override
     public UserDto createUser(UserDto userDto) {
