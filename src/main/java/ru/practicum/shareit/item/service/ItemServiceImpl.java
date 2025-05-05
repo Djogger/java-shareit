@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -18,14 +19,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final ConcurrentHashMap<Long, Item> items = new ConcurrentHashMap<>();
     private long id = 0L;
 
     @Override
-    public ItemDto addItem(ItemDto itemDto, Long ownerId) {
+    public ItemDto addItem(ItemDto itemDto, long ownerId) {
         if (itemDto == null) {
             throw new NullPointerException("Тело запроса пустое");
         }
@@ -53,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItems(Long ownerId) {
+    public List<ItemDto> getAllItems(long ownerId) {
         return items.values().stream()
                 .filter(item -> item.getOwner().getId().equals(ownerId))
                 .map(ItemMapper::toItemDto)
@@ -61,7 +62,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(Long itemId) {
+    public ItemDto getItem(long itemId) {
         Item item = items.get(itemId);
 
         if (item == null) {
@@ -91,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto editItem(Long itemId, ItemDto itemDto, Long ownerId) {
+    public ItemDto editItem(long itemId, ItemDto itemDto, long ownerId) {
         Item item = items.get(itemId);
 
         if (item == null) {

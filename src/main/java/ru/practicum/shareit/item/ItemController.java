@@ -22,7 +22,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<?> addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public ResponseEntity<?> addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long ownerId) {
         try {
             ItemDto createdItem = itemService.addItem(itemDto, ownerId);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
@@ -33,13 +33,13 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long ownerId) {
         return itemService.getAllItems(ownerId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getItem(@PathVariable Long itemId) {
+    public ItemDto getItem(@PathVariable long itemId) {
         return itemService.getItem(itemId);
     }
 
@@ -50,7 +50,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<ItemDto> editItem(@PathVariable Long itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public ResponseEntity<ItemDto> editItem(@PathVariable long itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long ownerId) {
         try {
             ItemDto updatedItem = itemService.editItem(itemId, itemDto, ownerId);
             return ResponseEntity.ok(updatedItem);

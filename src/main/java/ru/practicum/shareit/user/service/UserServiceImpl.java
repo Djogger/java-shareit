@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final Map<Long, User> users = new HashMap<>();
     private long id = 0L;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Long userId) {
+    public UserDto updateUser(UserDto userDto, long userId) {
         User existingUser = users.get(userId);
         if (existingUser == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Long userId) {
+    public UserDto getUserById(long userId) {
         User user = users.get(userId);
         if (user == null) {
             throw new NotFoundException("Пользователя с ID: " + userId + " не найден");
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId) {
+    public void deleteUser(long userId) {
         if (!users.containsKey(userId)) {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден");
         }
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserEntity(Long userId) {
+    public User getUserEntity(long userId) {
         User user = users.get(userId);
         if (user == null) {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден");

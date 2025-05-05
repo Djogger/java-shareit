@@ -25,7 +25,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable long userId, @RequestBody UserDto userDto) {
         try {
             return userService.updateUser(userDto, userId);
         } catch (DuplicateEmailException e) {
@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto getUserById(@PathVariable Long userId) {
+    public UserDto getUserById(@PathVariable long userId) {
         return userService.getUserById(userId);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUser(@PathVariable Long userId) {
+    public void deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
     }
 
