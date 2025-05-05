@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final ConcurrentHashMap<Long, Item> items = new ConcurrentHashMap<>();
-    private static Long id = 0L;
+    private Long id = 0L;
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Long ownerId) {
