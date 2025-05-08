@@ -4,8 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -26,11 +24,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto updateUser(@PathVariable long userId, @RequestBody UserDto userDto) {
-        try {
-            return userService.updateUser(userDto, userId);
-        } catch (DuplicateEmailException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
+        return userService.updateUser(userDto, userId);
     }
 
     @GetMapping("/{userId}")
