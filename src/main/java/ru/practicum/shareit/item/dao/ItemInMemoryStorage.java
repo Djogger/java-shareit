@@ -4,11 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,50 +15,40 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ItemInMemoryStorage implements ItemStorage {
-    private final UserService userService;
     private final ConcurrentHashMap<Long, Item> items = new ConcurrentHashMap<>();
     private long id = 0L;
 
     @Override
-    public ItemDto addItem(ItemDto itemDto, long ownerId) {
-        if (itemDto == null) {
-            throw new NullPointerException("Тело запроса пустое");
-        }
-
-        UserDto owner = userService.getUserById(ownerId);;
-
+    public Item addItem(Item item) {
         id += 1;
 
-        itemDto.setId(id);
-
-        Item item = ItemMapper.toItem(itemDto, owner);
+        item.setId(id);
 
         items.put(id, item);
 
-        return ItemMapper.toItemDto(item);
+        return item;
     }
 
     @Override
-    public List<ItemDto> getAllItems(long ownerId) {
+    public List<Item> getAllItems(long ownerId) {
         return items.values().stream()
                 .filter(item -> item.getOwner().getId().equals(ownerId))
-                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto getItem(long itemId) {
+    public Item getItem(long itemId) {
         Item item = items.get(itemId);
 
         if (item == null) {
             throw new NotFoundException("Вещи с ID: " + itemId + " не найдено");
         }
 
-        return ItemMapper.toItemDto(item);
+        return item;
     }
 
     @Override
-    public List<ItemDto> searchForItem(String text) {
+    public List<Item> searchForItem(String text) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
@@ -76,31 +62,23 @@ public class ItemInMemoryStorage implements ItemStorage {
                     String description = item.getDescription() != null ? item.getDescription().toLowerCase() : "";
                     return name.contains(searchText) || description.contains(searchText);
                 })
-                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto editItem(long itemId, ItemDto itemDto, long ownerId) {
-        Item item = items.get(itemId);
-
-        if (item == null) {
-            throw new NotFoundException("Вещи с ID: " + itemId + " не найдено");
+    public Item editItem(Item itemToEdit, Item item) {
+        if (item.getName() != null) {
+            itemToEdit.setName(item.getName().trim());
         }
-        if (!item.getOwner().getId().equals(ownerId)) {
-            throw new NotFoundException("Редактирование доступно только владельцу");
+        if (item.getDescription() != null) {
+            itemToEdit.setDescription(item.getDescription().trim());
         }
-
-        if (itemDto.getName() != null) {
-            item.setName(itemDto.getName().trim());
-        }
-        if (itemDto.getDescription() != null) {
-            item.setDescription(itemDto.getDescription().trim());
-        }
-        if (itemDto.getAvailable() != null) {
-            item.setAvailable(itemDto.getAvailable());
+        if (item.getAvailable() != null) {
+            itemToEdit.setAvailable(item.getAvailable());
         }
 
-        return ItemMapper.toItemDto(item);
+        items.put(itemToEdit.getId(), itemToEdit);
+
+        return item;
     }
 }
