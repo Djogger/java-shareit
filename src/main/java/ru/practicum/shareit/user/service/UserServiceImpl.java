@@ -63,11 +63,6 @@ public class UserServiceImpl implements UserService {
         userStorage.deleteUser(userId);
     }
 
-    @Override
-    public User getUserEntity(long userId) {
-        return userStorage.getUserEntity(userId);
-    }
-
     private boolean emailExists(String email, Long excludeUserId) {
         return userStorage.getAllUsers().stream()
                 .anyMatch(u -> u.getEmail().equals(email) &&
