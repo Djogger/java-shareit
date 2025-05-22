@@ -7,12 +7,12 @@ import java.util.List;
 public interface UserService {
     UserDto createUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto, long userId);
+    UserDto updateUser(UserDto userDto, Long userId);
 
-    UserDto getUserById(long userId);
+    UserDto getUserById(Long userId);
 
     List<UserDto> getAllUsers();
 
-    void deleteUser(long userId);
+    void deleteUser(Long userId);
 
 }
