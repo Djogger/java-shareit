@@ -4,26 +4,26 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.user.dto.UserDto;
+import lombok.NoArgsConstructor;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ItemDto {
-    Long id;
+    private Long id;
 
     @NotNull
     @NotBlank(message = "Поле с названием не может быть пустым")
-    String name;
+    private String name;
 
     @NotNull
     @NotBlank(message = "Поле с описанием не может быть пустым")
-    String description;
+    private String description;
 
     @NotNull(message = "Поле со статусом не может быть пустым")
-    Boolean available;
-    UserDto owner;
-    Long request;
+    private Boolean available;
+
 }
