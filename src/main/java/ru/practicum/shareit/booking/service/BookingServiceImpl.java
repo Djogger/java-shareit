@@ -30,10 +30,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto create(BookingDto bookingDto, Long userId) {
-        User booker = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
-        Item item = itemRepository.findById(bookingDto.getItemId())
-                .orElseThrow(() -> new NotFoundException("Вещи с id: " + bookingDto.getItemId() + " не найдено"));
+        User booker = getBooker(userId);
+        Item item = getItem(bookingDto.getItemId());
 
         Booking booking = BookingMapper.toBooking(bookingDto, item, booker);
         booking.setStatus(BookingStatus.WAITING);
@@ -59,8 +57,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto update(Long bookingId, Long userId, Boolean isApproved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Бронирования с id: " + bookingId + " не найдено"));
+        Booking booking = getBooking(bookingId);
 
         if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new ValidationException("Пользователь с id: " + userId + " не является владельцем");
@@ -95,8 +92,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingByOwnerId(Long ownerId, String stringState) {
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException("Владельца с id: " + ownerId + " не найдено"));
         List<Booking> bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
 
         if (bookings.isEmpty()) {
@@ -135,8 +130,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingByUserId(Long userId, String stringState) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
         List<Booking> bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
 
         if (bookings.isEmpty()) {
@@ -171,6 +164,21 @@ public class BookingServiceImpl implements BookingService {
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
+    }
+
+    private User getBooker(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
+    }
+
+    private Item getItem(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещи с id: " + itemId + " не найдено"));
+    }
+
+    private Booking getBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Бронирования с id: " + bookingId + " не найдено"));
     }
 
     private static BookingState getState(String stringState) {

@@ -54,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(Long itemId, CommentDto commentDto, Long userId) {
-        if (commentDto.getText().isEmpty() || commentDto.getText().isBlank()) {
+        if (commentDto.getText() == null || commentDto.getText().isEmpty() || commentDto.getText().isBlank()) {
             throw new ValidationException("Комментарий не содержит текста");
         }
 
@@ -63,7 +63,7 @@ public class ItemServiceImpl implements ItemService {
 
         Comment comment = CommentMapper.toComment(commentDto, item, user);
 
-        List<Booking> bookings = bookingRepository.findByBookerIdStatePast(comment.getUser().getId(), LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findByBookerIdAndItemIdStatePast(comment.getUser().getId(), itemId, LocalDateTime.now());
 
         if (bookings.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с id: " + userId + " ничего не бронировал");
@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAllItems(Long ownerId) {
         return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId).stream()
-                .filter(item -> item.getOwner().getId().equals((long) ownerId))
+                .filter(item -> item.getOwner().getId().equals(ownerId))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
