@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.BookingItemDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -19,20 +21,25 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long ownerId) {
-            return itemService.addItem(itemDto, ownerId);
+    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        return itemService.addItem(itemDto, ownerId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@PathVariable Long itemId, @RequestBody CommentDto commentDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.addComment(itemId, commentDto, userId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public List<BookingItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.getAllItems(ownerId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getItem(@PathVariable long itemId) {
-        return itemService.getItem(itemId);
+    public BookingItemDto getItem(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        return itemService.getItem(itemId, ownerId);
     }
 
     @GetMapping("/search")
@@ -43,7 +50,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto editItem(@PathVariable long itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public ItemDto editItem(@PathVariable Long itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.editItem(itemId, itemDto, ownerId);
     }
 
