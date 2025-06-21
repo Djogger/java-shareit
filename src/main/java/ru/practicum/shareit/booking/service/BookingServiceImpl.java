@@ -17,6 +17,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,11 +93,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingByOwnerId(Long ownerId, String stringState) {
-        List<Booking> bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
-
-        if (bookings.isEmpty()) {
-            throw new NotFoundException("Список бронирования пользователя с id: " + ownerId + " - пуст");
-        }
+        List<Booking> bookings = new ArrayList<>();
 
         BookingState state = getState(stringState);
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -122,6 +119,10 @@ public class BookingServiceImpl implements BookingService {
                 break;
         }
 
+        if (bookings.isEmpty()) {
+            throw new NotFoundException("Список бронирования пользователя с id: " + ownerId + " - пуст");
+        }
+
         return bookings
                 .stream()
                 .map(BookingMapper::toBookingDto)
@@ -130,11 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingByUserId(Long userId, String stringState) {
-        List<Booking> bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
-
-        if (bookings.isEmpty()) {
-            throw new NotFoundException("Список бронирования пользователя с id: " + userId + " - пуст");
-        }
+        List<Booking> bookings = new ArrayList<>();
 
         BookingState state = getState(stringState);
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -158,6 +155,10 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 bookings = bookingRepository.findFuture(userId, localDateTime);
                 break;
+        }
+
+        if (bookings.isEmpty()) {
+            throw new NotFoundException("Список бронирования пользователя с id: " + userId + " - пуст");
         }
 
         return bookings

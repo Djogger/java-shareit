@@ -25,8 +25,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -75,11 +74,34 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItems(Long ownerId) {
-        return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId).stream()
+    public List<BookingItemDto> getAllItems(Long ownerId) {
+        List<ItemDto> items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId).stream()
                 .filter(item -> item.getOwner().getId().equals(ownerId))
                 .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        List<Long> ids = items.stream()
+                .map(ItemDto::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        Map<Long, List<Booking>> bookings = bookingRepository.findByItemsIds(ids).stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+
+        Map<Long, List<Comment>> comments = commentRepository.findByItemsIds(ids).stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
+
+        log.info("ids: " + ids);
+        log.info("bookings: " + bookings);
+        log.info("comments: " + comments);
+
+        return items.stream()
+                .map(item -> BookingItemMapper.itemDtoToBookingItemDto(item, comments.getOrDefault(item.getId(), Collections.emptyList()),
+                                bookings.getOrDefault(item.getId(), Collections.emptyList()).stream()
+                                        .filter(b -> b.getEnd().isBefore(LocalDateTime.now())).max(Comparator.comparing(Booking::getEnd)).orElse(null),
+                                bookings.getOrDefault(item.getId(), Collections.emptyList()).stream()
+                                        .filter(b -> b.getStart().isAfter(LocalDateTime.now())).min(Comparator.comparing(Booking::getStart)).orElse(null)))
+                .toList();
     }
 
     @Override

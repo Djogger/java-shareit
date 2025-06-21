@@ -32,7 +32,7 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public List<BookingItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.getAllItems(ownerId);
     }
 

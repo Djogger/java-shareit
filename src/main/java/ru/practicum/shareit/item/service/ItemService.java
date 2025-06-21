@@ -11,7 +11,7 @@ public interface ItemService {
 
     CommentDto addComment(Long itemId, CommentDto commentDto, Long userId);
 
-    List<ItemDto> getAllItems(Long ownerId);
+    List<BookingItemDto> getAllItems(Long ownerId);
 
     BookingItemDto getItem(Long itemId, Long userId);
 
