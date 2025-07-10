@@ -244,63 +244,63 @@ class BookingServiceImplTest {
     class GetAllBookingByUserId {
         @Test
         void getAllBookingByUserIdStateAll() {
-            Mockito.when(bookingRepository.findOwnerAll(Mockito.anyLong())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(Mockito.anyLong())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.ALL.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.ALL.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdStateFuture() {
-            Mockito.when(bookingRepository.findOwnerFuture(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findFuture(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.FUTURE.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.FUTURE.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdStateCurrent() {
-            Mockito.when(bookingRepository.findOwnerCurrent(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findByBookerIdStateCurrent(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.CURRENT.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.CURRENT.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdStateWaiting() {
-            Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatus(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findByBookerIdAndStatus(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.WAITING.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.WAITING.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdStatePast() {
-            Mockito.when(bookingRepository.findOwnerPast(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findByBookerIdStatePast(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.PAST.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.PAST.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdStateRejected() {
-            Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatus(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+            Mockito.when(bookingRepository.findByBookerIdAndStatus(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
 
-            List<BookingDto> result = bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.REJECTED.toString());
+            List<BookingDto> result = bookingService.getAllBookingByUserId(user1.getId(), BookingState.REJECTED.toString());
 
             assertEquals(1, result.size());
         }
 
         @Test
         void getAllBookingByUserIdShouldReternNotFoundException() {
-            Mockito.when(bookingRepository.findOwnerAll(Mockito.anyLong())).thenReturn(List.of());
+            Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(Mockito.anyLong())).thenReturn(List.of());
 
-            assertThrows(NotFoundException.class, () -> bookingService.getAllBookingByOwnerId(user1.getId(), BookingState.ALL.toString()));
+            assertThrows(NotFoundException.class, () -> bookingService.getAllBookingByUserId(user1.getId(), BookingState.ALL.toString()));
         }
 
     }

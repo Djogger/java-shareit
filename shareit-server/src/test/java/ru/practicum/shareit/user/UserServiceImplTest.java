@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -38,6 +40,17 @@ public class UserServiceImplTest {
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void testSaveUserWithSameEmail() {
+        UserDto userDto = new UserDto(null, "Jack", "Jackson@mail.ru");
+
+        userService.createUser(userDto);
+
+        UserDto sameUserDto = new UserDto(null, "Jacks", "Jackson@mail.ru");
+
+        assertThrows(DuplicateEmailException.class, () -> userService.createUser(sameUserDto));
     }
 
     @Test
