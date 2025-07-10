@@ -15,6 +15,8 @@ import ru.practicum.server.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,8 +28,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto createItemRequest(Long userId, ItemRequestDto itemRequestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
+        User user = findUserById(userId);
 
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
 
@@ -37,30 +38,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> getAllItemsRequests() {
-        List<ItemRequest> itemsRequests = itemRequestRepository.findAll();
+    public List<ItemRequestDto> getAllItemsRequests(Long userId) {
+        List<ItemRequest> itemsRequests = itemRequestRepository.findAllExcept(userId);
 
-        return itemsRequests.stream()
-                .map(itemRequest -> {
-                    List<Item> items = itemRepository.findByRequestId(itemRequest.getId());
-                    return ItemRequestMapper.toItemRequestDto(itemRequest, items);
-                })
-                .toList();
+        return getItemRequestsDtoWithItems(itemsRequests);
     }
 
     @Override
     public List<ItemRequestDto> getItemsRequestsForUser(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
+        findUserById(userId);
 
         List<ItemRequest> itemsRequests = itemRequestRepository.findAllByRequesterId(userId);
 
-        return itemsRequests.stream()
-                .map(itemRequest -> {
-                    List<Item> items = itemRepository.findByRequestId(itemRequest.getId());
-                    return ItemRequestMapper.toItemRequestDto(itemRequest, items);
-                })
-                .toList();
+        return getItemRequestsDtoWithItems(itemsRequests);
     }
 
     @Override
@@ -71,6 +61,27 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<Item> items = itemRepository.findByRequestId(itemRequest.getId());
 
         return ItemRequestMapper.toItemRequestDto(itemRequest, items);
+    }
+
+    private List<ItemRequestDto> getItemRequestsDtoWithItems(List<ItemRequest> itemsRequests) {
+        List<Item> items = itemRepository.findByRequestsIds(itemsRequests.stream().map(ItemRequest::getId).toList());
+
+        Map<Long, List<Item>> requestItemsMap = itemsRequests.stream()
+                .collect(Collectors.toMap(
+                        ItemRequest::getId,
+                        request -> items.stream()
+                                .filter(item -> item.getRequest() != null && item.getRequest().getId().equals(request.getId()))
+                                .collect(Collectors.toList())
+                ));
+
+        return itemsRequests.stream()
+                .map(itemRequest -> ItemRequestMapper.toItemRequestDto(itemRequest, requestItemsMap.get(itemRequest.getId())))
+                .toList();
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователя с id: " + userId + " не найдено"));
     }
 
 }

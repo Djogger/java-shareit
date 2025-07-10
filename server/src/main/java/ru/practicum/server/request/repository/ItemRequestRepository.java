@@ -8,6 +8,9 @@ import ru.practicum.server.request.model.ItemRequest;
 import java.util.List;
 
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
+    @Query("SELECT ir FROM ItemRequest ir WHERE ir.requester.id <> :userId ORDER BY ir.created DESC")
+    List<ItemRequest> findAllExcept(@Param("userId") Long userId);
+
     @Query("SELECT ir FROM ItemRequest ir WHERE ir.requester.id = :requesterId ORDER BY ir.created DESC")
     List<ItemRequest> findAllByRequesterId(@Param("requesterId") Long userId);
 }

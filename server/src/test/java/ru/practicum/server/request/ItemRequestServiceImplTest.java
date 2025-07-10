@@ -57,7 +57,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllItemsRequests() {
-        List<ItemRequestDto> result = itemRequestService.getAllItemsRequests();
+        List<ItemRequestDto> result = itemRequestService.getAllItemsRequests(userId + 1);
 
         assertEquals(1, result.size());
     }

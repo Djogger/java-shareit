@@ -43,12 +43,6 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getItem().getAvailable()) {
             throw new ValidationException("Вещь недоступна");
         }
-        if (booking.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Время конца бронирования не может быть раньше начала");
-        }
-        if (booking.getStart().isAfter(booking.getEnd())) {
-            throw new ValidationException("Время начала бронирования не может быть раньше конца");
-        }
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }

@@ -64,7 +64,7 @@ class ItemRequestControllerTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description",
                 null, List.of());
 
-        Mockito.when(itemRequestService.getAllItemsRequests())
+        Mockito.when(itemRequestService.getAllItemsRequests(Mockito.anyLong()))
                 .thenReturn(List.of(itemRequestDto));
 
         String result = mvc.perform(get("/requests/all")

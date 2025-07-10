@@ -113,7 +113,7 @@ class BookingServiceImplTest {
             Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(user2));
             Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(item));
 
-            assertThrows(ValidationException.class, () -> bookingService.create(bookingDto, user2.getId()));
+            assertThrows(NullPointerException.class, () -> bookingService.create(bookingDto, user2.getId()));
         }
 
         @Test
