@@ -16,11 +16,11 @@ public class BookItemRequestDto {
     private long itemId;
 
     @NotNull
-    @FutureOrPresent
+    @FutureOrPresent(message = "Дата начала бронирования не может быть в прошлом")
     private LocalDateTime start;
 
     @NotNull
-    @Future
+    @Future(message = "Дата конца бронирования не может быть в прошлом")
     private LocalDateTime end;
 
 }
