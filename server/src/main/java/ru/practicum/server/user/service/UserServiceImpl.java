@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.server.exception.DuplicateEmailException;
 import ru.practicum.server.exception.NotFoundException;
-import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.user.dto.UserDto;
 import ru.practicum.server.user.model.User;
 import ru.practicum.server.user.mapper.UserMapper;
@@ -21,15 +20,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        if (userDto.getEmail() != null && userDto.getEmail().contains("@")) {
-            if (!emailExists(userDto.getEmail(), userDto.getId())) {
-                User user = UserMapper.toUser(userDto);
-                return UserMapper.toUserDto(userRepository.save(user));
-            } else  {
-                throw new DuplicateEmailException("Такой email уже используется");
-            }
-        } else {
-            throw new ValidationException("Такой email не найден");
+        if (!emailExists(userDto.getEmail(), userDto.getId())) {
+            User user = UserMapper.toUser(userDto);
+            return UserMapper.toUserDto(userRepository.save(user));
+        } else  {
+            throw new DuplicateEmailException("Такой email уже используется");
         }
     }
 
@@ -39,13 +34,11 @@ public class UserServiceImpl implements UserService {
 
         User user = UserMapper.toUser(userDto);
 
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            if (!user.getEmail().equals(userToUpdate.getEmail())) {
-                if (emailExists(user.getEmail(), userId)) {
-                    throw new DuplicateEmailException("Такой email уже используется");
-                }
-                userToUpdate.setEmail(user.getEmail());
+        if (user.getEmail() != null && !user.getEmail().equals(userToUpdate.getEmail())) {
+            if (emailExists(user.getEmail(), userId)) {
+                throw new DuplicateEmailException("Такой email уже используется");
             }
+            userToUpdate.setEmail(user.getEmail());
         }
 
         if (user.getName() != null && !user.getName().isBlank()) {

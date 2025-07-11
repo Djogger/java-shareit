@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.server.booking.model.Booking;
 import ru.practicum.server.booking.repository.BookingRepository;
 import ru.practicum.server.exception.NotFoundException;
-import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.item.dto.BookingItemDto;
 import ru.practicum.server.item.dto.CommentDto;
 import ru.practicum.server.item.dto.ItemDto;
@@ -43,10 +42,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Long ownerId) {
-        if (itemDto == null) {
-            throw new NullPointerException("Тело запроса пустое");
-        }
-
         UserDto owner = userService.getUserById(ownerId);
 
         ItemRequest request = null;
@@ -63,10 +58,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(Long itemId, CommentDto commentDto, Long userId) {
-        if (commentDto.getText() == null || commentDto.getText().isEmpty() || commentDto.getText().isBlank()) {
-            throw new ValidationException("Комментарий не содержит текста");
-        }
-
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вещи с id: " + itemId + " не найдено"));
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователя с id: " + userId + " не найдено"));
 
@@ -159,7 +150,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Редактирование доступно только владельцу");
         }
 
-        Item item = ItemMapper.toItem(itemDto, owner, null);
+        Item item = ItemMapper.toItem(itemDto, owner, request);
 
         if (item.getName() != null) {
             itemToEdit.setName(item.getName().trim());

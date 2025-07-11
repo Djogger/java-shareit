@@ -1,7 +1,5 @@
 package ru.practicum.server.booking;
 
-import io.micrometer.common.lang.NonNull;
-import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +18,12 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingDto create(@RequestBody @Valid BookingDto bookingDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public BookingDto create(@RequestBody BookingDto bookingDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingService.create(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto update(@PathVariable Long bookingId, @PathParam("approved") @NonNull Boolean approved, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public BookingDto update(@PathVariable Long bookingId, @PathParam("approved") Boolean approved, @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingService.update(bookingId, userId, approved);
     }
 

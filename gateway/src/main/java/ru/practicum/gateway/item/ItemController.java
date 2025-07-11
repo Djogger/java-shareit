@@ -1,5 +1,6 @@
 package ru.practicum.gateway.item;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @RequestBody @Valid ItemDto requestDto) {
+                                             @RequestBody @NotNull @Valid ItemDto requestDto) {
         log.info("Create Item");
         return itemClient.createItem(userId, requestDto);
     }
